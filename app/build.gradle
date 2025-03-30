@@ -4,7 +4,12 @@ plugins {
     id 'com.google.ar.sceneform.plugin'
 }
 
+
+
+
 android {
+    namespace 'com.example.modernfurniture'
+
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 

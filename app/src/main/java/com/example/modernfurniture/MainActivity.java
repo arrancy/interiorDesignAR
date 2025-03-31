@@ -24,11 +24,10 @@ import com.google.ar.sceneform.ux.TransformableNode;
 import java.util.ArrayList;
 import java.util.Objects;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private ArFragment arFragment;
-    private ArrayList<Integer> imagesPath = new ArrayList<Integer>();
+    private ArrayList<Integer> imagesPath = new ArrayList<>();
     private ArrayList<String> namesPath = new ArrayList<>();
     private ArrayList<String> modelNames = new ArrayList<>();
     AnchorNode anchorNode;
@@ -40,63 +39,42 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.camera);
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()){
-                    case R.id.wishlist:
-                        startActivity(new Intent(getApplicationContext(),wishlist.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.gallery:
-                        startActivity(new Intent(getApplicationContext(),gallery.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.cart:
-                        startActivity(new Intent(getApplicationContext(),cart.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.profile:
-                        startActivity(new Intent(getApplicationContext(),profile.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.camera:
-                        return true;
-
-                }
-                return false;
+        bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if (id == R.id.wishlist) {
+                startActivity(new Intent(getApplicationContext(), wishlist.class));
+            } else if (id == R.id.gallery) {
+                startActivity(new Intent(getApplicationContext(), gallery.class));
+            } else if (id == R.id.cart) {
+                startActivity(new Intent(getApplicationContext(), cart.class));
+            } else if (id == R.id.profile) {
+                startActivity(new Intent(getApplicationContext(), profile.class));
+            } else if (id == R.id.camera) {
+                return true;
             }
+            overridePendingTransition(0, 0);
+            return false;
         });
 
-        arFragment = (ArFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
-        btnRemove = (Button)findViewById(R.id.remove);
+        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        btnRemove = findViewById(R.id.remove);
         getImages();
 
         arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
-
             Anchor anchor = hitResult.createAnchor();
-
             ModelRenderable.builder()
                     .setSource(this, Uri.parse(Common.model))
                     .build()
-                    .thenAccept(modelRenderable -> addModelToScene(anchor,modelRenderable));
-
+                    .thenAccept(modelRenderable -> addModelToScene(anchor, modelRenderable));
         });
-
 
         btnRemove.setOnClickListener(view -> removeAnchorNode(anchorNode));
     }
 
     private void getImages() {
-
         imagesPath.add(R.drawable.table);
         imagesPath.add(R.drawable.bookshelf);
         imagesPath.add(R.drawable.lamp);
@@ -115,22 +93,18 @@ public class MainActivity extends AppCompatActivity {
         modelNames.add("tv.sfb");
         modelNames.add("cloth.sfb");
         modelNames.add("chair.sfb");
-
-        initaiteRecyclerview();
+        initiateRecyclerView();
     }
 
-    private void initaiteRecyclerview() {
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recyclerview);
+    private void initiateRecyclerView() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(layoutManager);
-        RecyclerviewAdapter adapter = new RecyclerviewAdapter(this,namesPath,imagesPath,modelNames);
+        RecyclerviewAdapter adapter = new RecyclerviewAdapter(this, namesPath, imagesPath, modelNames);
         recyclerView.setAdapter(adapter);
-
     }
 
     private void addModelToScene(Anchor anchor, ModelRenderable modelRenderable) {
-
         anchorNode = new AnchorNode(anchor);
         TransformableNode node = new TransformableNode(arFragment.getTransformationSystem());
         node.setParent(anchorNode);
@@ -139,12 +113,11 @@ public class MainActivity extends AppCompatActivity {
         node.select();
     }
 
-    public void removeAnchorNode(AnchorNode nodeToremove) {
-        if (nodeToremove != null) {
-            arFragment.getArSceneView().getScene().removeChild(nodeToremove);
-            Objects.requireNonNull(nodeToremove.getAnchor()).detach();
-            nodeToremove.setParent(null);
-            //nodeToremove = null;
+    public void removeAnchorNode(AnchorNode nodeToRemove) {
+        if (nodeToRemove != null) {
+            arFragment.getArSceneView().getScene().removeChild(nodeToRemove);
+            Objects.requireNonNull(nodeToRemove.getAnchor()).detach();
+            nodeToRemove.setParent(null);
         }
     }
 }

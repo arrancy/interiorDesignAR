@@ -39,40 +39,24 @@ public class gallery extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.gallery);
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()){
-                    case R.id.wishlist:
-                        startActivity(new Intent(getApplicationContext(),wishlist.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.camera:
-                        startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.cart:
-                        startActivity(new Intent(getApplicationContext(),cart.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.profile:
-                        startActivity(new Intent(getApplicationContext(),profile.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.gallery:
-                        return true;
-                }
-                return false;
+        bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if (id == R.id.wishlist) {
+                startActivity(new Intent(getApplicationContext(), wishlist.class));
+            } else if (id == R.id.camera) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            } else if (id == R.id.cart) {
+                startActivity(new Intent(getApplicationContext(), cart.class));
+            } else if (id == R.id.profile) {
+                startActivity(new Intent(getApplicationContext(), profile.class));
+            } else if (id == R.id.gallery) {
+                return true;
             }
+            overridePendingTransition(0, 0);
+            return false;
         });
 
         mRecycleView = findViewById(R.id.recyclerView3);
@@ -87,41 +71,31 @@ public class gallery extends AppCompatActivity {
         folder = FirebaseStorage.getInstance().getReference().child("image");
 
         db.collection("products").get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                        if(!queryDocumentSnapshots.isEmpty()){
-
-                            List<DocumentSnapshot> clist = queryDocumentSnapshots.getDocuments();
-
-                            for(DocumentSnapshot d : clist){
-                                Products p = d.toObject(Products.class);
-                                list.add(p);
-                            }
-                            mAdapter.notifyDataSetChanged();
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        List<DocumentSnapshot> clist = queryDocumentSnapshots.getDocuments();
+                        for (DocumentSnapshot d : clist) {
+                            Products p = d.toObject(Products.class);
+                            list.add(p);
                         }
+                        mAdapter.notifyDataSetChanged();
                     }
                 });
 
-        //search
+        // Search functionality
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
                 mAdapter.getFilter().filter(s);
                 searchC = s;
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
     }

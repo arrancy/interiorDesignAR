@@ -49,47 +49,41 @@ public class Admin_userReport extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.Anavigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.Anavigation);
         bottomNavigationView.setSelectedItemId(R.id.ureport);
-        //navigation bar
+
+        // Navigation listener using if-else instead of switch-case
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()){
-                    case R.id.addP:
-                        startActivity(new Intent(getApplicationContext(),Add_products.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.order:
-                        startActivity(new Intent(getApplicationContext(),Admin_orderReport.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.log:
-                        startActivity(new Intent(getApplicationContext(),Login.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.ureport:
-                        return true;
-
+                int id = menuItem.getItemId();
+                if (id == R.id.addP) {
+                    startActivity(new Intent(getApplicationContext(), Add_products.class));
+                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (id == R.id.order) {
+                    startActivity(new Intent(getApplicationContext(), Admin_orderReport.class));
+                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (id == R.id.log) {
+                    startActivity(new Intent(getApplicationContext(), Login.class));
+                    overridePendingTransition(0, 0);
+                    return true;
+                } else if (id == R.id.ureport) {
+                    return true;
                 }
                 return false;
             }
         });
 
-
+        // Retrieve user data from Firestore
         db.collection("users").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
                         if (!queryDocumentSnapshots.isEmpty()) {
-
                             List<DocumentSnapshot> ulist = queryDocumentSnapshots.getDocuments();
-
                             for (DocumentSnapshot d : ulist) {
                                 getUserData p = d.toObject(getUserData.class);
                                 list.add(p);
@@ -99,28 +93,23 @@ public class Admin_userReport extends AppCompatActivity {
                     }
                 });
 
-        //search
+        // Search functionality
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                // No operation
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
                 mAdapter.getFilter().filter(s);
                 searchC = s;
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                // No operation
             }
         });
-
-}
-
-
+    }
 }

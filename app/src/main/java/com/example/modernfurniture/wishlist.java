@@ -42,40 +42,24 @@ public class wishlist extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wishlist);
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.wishlist);
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()){
-                    case R.id.gallery:
-                        startActivity(new Intent(getApplicationContext(),gallery.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.camera:
-                        startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.cart:
-                        startActivity(new Intent(getApplicationContext(),cart.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.profile:
-                        startActivity(new Intent(getApplicationContext(),profile.class));
-                        overridePendingTransition(0,0);
-                        return true;
-
-                    case R.id.wishlist:
-                        return true;
-
-                }
-                return false;
+        bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if (id == R.id.gallery) {
+                startActivity(new Intent(getApplicationContext(), gallery.class));
+            } else if (id == R.id.camera) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            } else if (id == R.id.cart) {
+                startActivity(new Intent(getApplicationContext(), cart.class));
+            } else if (id == R.id.profile) {
+                startActivity(new Intent(getApplicationContext(), profile.class));
+            } else if (id == R.id.wishlist) {
+                return true;
             }
+            overridePendingTransition(0, 0);
+            return false;
         });
 
         btn = findViewById(R.id.Wdelete);
@@ -91,50 +75,37 @@ public class wishlist extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         folder = FirebaseStorage.getInstance().getReference().child("image");
 
-        //delete product
-        mAdapter.setOnItemClickListener(new WishlistAdapter.OnItemClickListner() {
-            @Override
-            public void onDeleteClick(int position) {
-                deleteProduct(position);
-                DeletePosition(position);
-            }
+        // Delete product
+        mAdapter.setOnItemClickListener(position -> {
+            deleteProduct(position);
+            DeletePosition(position);
         });
 
         db.collection("Wishlist").document(auth.getCurrentUser().getUid())
                 .collection("users").get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                        if(!queryDocumentSnapshots.isEmpty()){
-
-                            List<DocumentSnapshot> clist = queryDocumentSnapshots.getDocuments();
-
-                            for(DocumentSnapshot d : clist){
-                                getWishlistData p = d.toObject(getWishlistData.class);
-                                list.add(p);
-                            }
-                            mAdapter.notifyDataSetChanged();
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        List<DocumentSnapshot> clist = queryDocumentSnapshots.getDocuments();
+                        for (DocumentSnapshot d : clist) {
+                            getWishlistData p = d.toObject(getWishlistData.class);
+                            list.add(p);
                         }
+                        mAdapter.notifyDataSetChanged();
                     }
                 });
     }
 
-    public void DeletePosition(int position){
+    public void DeletePosition(int position) {
         list.remove(position);
+        mAdapter.notifyItemRemoved(position);
     }
 
     private void deleteProduct(int position) {
         db.collection("Wishlist").document(auth.getCurrentUser().getUid())
                 .collection("users").document(list.get(position).getId()).delete()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(wishlist.this, "Product deleted", Toast.LENGTH_LONG).show();
-                            //finish();
-                        }
-                        mAdapter.notifyItemRemoved(position);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(wishlist.this, "Product deleted", Toast.LENGTH_LONG).show();
                     }
                 });
     }

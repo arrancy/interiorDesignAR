@@ -194,6 +194,7 @@
                 android:layout_marginBottom="155dp"
                 android:text="1"
                 android:textSize="23dp"
+                android:hint="Enter something man"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/Dplus"
                 app:layout_constraintStart_toEndOf="@+id/Dminus"

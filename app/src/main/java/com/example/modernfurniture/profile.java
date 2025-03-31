@@ -81,14 +81,20 @@ public class profile extends AppCompatActivity {
         fStore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
-        StorageReference profileRef = storageReference.child("users/" + fAuth.getCurrentUser().getUid() + "/profile.jpg");
+        user = fAuth.getCurrentUser();
+        if (user == null) {
+            startActivity(new Intent(getApplicationContext(), Login.class));
+            finish();
+            return;
+        }
+
+        userId = fAuth.getCurrentUser().getUid();
+
+        StorageReference profileRef = storageReference.child("users/" + userId + "/profile.jpg");
         profileRef.getDownloadUrl().addOnSuccessListener(uri -> Picasso.get().load(uri).into(profileImage));
 
         resendCode = findViewById(R.id.resendCode);
         verifyMsg = findViewById(R.id.verifyMsg);
-
-        userId = fAuth.getCurrentUser().getUid();
-        user = fAuth.getCurrentUser();
 
         if (!user.isEmailVerified()) {
             verifyMsg.setVisibility(View.VISIBLE);

@@ -20,7 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class camera extends AppCompatActivity {
-    private ArFragment arFragment; // Declare at class level
+    private ArFragment arFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

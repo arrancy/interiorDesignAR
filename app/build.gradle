@@ -10,8 +10,13 @@ plugins {
 android {
     namespace 'com.example.modernfurniture'
 
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileOptions {
+         sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+    }
+
+    compileSdkVersion 33
+    buildToolsVersion "33.0.2"
 
     defaultConfig {
         applicationId "com.example.modernfurniture"
@@ -30,10 +35,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+
 }
 
 dependencies {
